@@ -13,6 +13,7 @@ body {
 }
 
 .keyboard {
+  max-width: 100vw;
   display: grid;
   grid-template-columns: repeat(20, minmax(auto, 1.25em));
   grid-auto-rows: 3em;
@@ -72,6 +73,7 @@ body {
 }
 
 .guess-grid {
+  max-width: 100vw;
   display: grid;
   justify-content: center;
   align-content: center;

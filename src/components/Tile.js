@@ -2,7 +2,7 @@ import React from 'react'
 
 function Tile() {
   return (
-    <div class="tile"></div>
+    <div className="tile"></div>
   )
 }
 
