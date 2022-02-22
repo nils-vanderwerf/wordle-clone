@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from 'react'
+import React, {useRef, useEffect, useState} from 'react'
 import GuessGrid from './components/GuessGrid';
 import Keyboard from './components/Keyboard';
 import Alert from './components/Alert';
@@ -7,6 +7,7 @@ import './App.css';
 import {dictionary} from './data/dictionary'
 const WORD_LENGTH = 5
 const FLIP_ANIMATION_DURATION = 500
+const DANCE_ANIMATION_DURATION = 500
 
 const randomNum = Math.floor(Math.floor(Math.random(dictionary.length) * dictionary.length))
 const targetWord = dictionary[randomNum]
@@ -17,10 +18,14 @@ function App() {
   const keyboard = useRef(null)
 
   useEffect(() => {
-    document.addEventListener("click", handleMouseClick)
-    document.addEventListener("keydown", handleKeyPress)
+    startInteraction()
   }, [])
 
+  function startInteraction() {
+    console.log("started interaction")
+    document.addEventListener("click", handleMouseClick)
+    document.addEventListener("keydown", handleKeyPress)
+  }
   function stopInteraction() {
     document.removeEventListener("click", handleMouseClick)
     document.removeEventListener("keydown", handleKeyPress)
@@ -93,20 +98,59 @@ function checkRealWord(guess, tiles) {
     shakeTiles(tiles)
     return
   }
-
-  stopInteraction()
-  tiles.forEach((...params) => flipTile(...params, guess))
+  else {
+    stopInteraction()
+    tiles.forEach((...params) => flipTile(...params, guess))
+  }
 }
 
 function flipTile(tile, index, array, guess) {
   const letter = tile.dataset.letter
-  console.log("KEYBOARD", keyboard)
-  const key = keyboard.current.querySelector(`[data-key=${letter}]`)
+  console.log("KEYBOARD METHODS", keyboard.current)
+  //The i At the end means case insensitive
+  const key = keyboard.current.querySelector(`[data-key="${letter}"i]`)
+  console.log("KEY", key)
   setTimeout(() => {
     tile.classList.add("flip")
   }, index * FLIP_ANIMATION_DURATION / 2)
+
+  tile.addEventListener("transitionend", () => {
+    tile.classList.remove("flip")
+    
+    // Letter is in the correct location
+    if (targetWord[index] === letter) {
+      tile.dataset.state = "correct"
+      key.classList.add("correct")
+    } else if (targetWord.includes(letter)) {
+      tile.dataset.state = "wrong-location"
+      key.classList.add("wrong-location")
+    } else {
+      tile.dataset.state = "wrong"
+      key.classList.add("wrong")
+    }
+   
+    if (index === array.length - 1) {
+      tile.addEventListener("transitionend", () => {
+        startInteraction()
+        checkWinLose(guess, array)
+      })
+    }
+  })
 }
 
+function checkWinLose(guess, tiles) {
+  if (guess === targetWord) {
+    showAlert(`You Win`, 5000)
+    danceTiles(tiles)
+    stopInteraction()
+    return
+  }
+  const remainingTiles = gridRef.current.querySelectorAll(":not([data-letter])")
+  if (remainingTiles.length === 0) {
+    showAlert(`The target word is ${targetWord.toUpperCase()}`, null)
+    stopInteraction()
+  }
+}
 
 function showAlert(message, duration = 1000) {
   const alertContainer = document.querySelector("[data-alert-container]")
@@ -139,6 +183,17 @@ function shakeTiles(tiles) {
     tile.addEventListener("animationend", () => {
       tile.classList.remove("shake")
     }, {once: true})
+  })
+}
+
+function danceTiles(tiles) {
+  tiles.forEach((tile, index) => {
+    setTimeout(() => {
+    tile.classList.add("dance")
+    tile.addEventListener("animationend", () => {
+      tile.classList.remove("shake")
+    }, {once: true})
+    }, index * DANCE_ANIMATION_DURATION / 5)
   })
 }
 
