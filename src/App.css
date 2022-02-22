@@ -114,3 +114,31 @@ body {
   border: none;
   background-color: hsl(115, 29%, 43%);
 }
+
+.alert-container {
+  position: fixed;
+  top: 5vh;
+  left: 50vw;
+  transform: translate(-50%);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.alert {
+  pointer-events: none;
+  background-color: hsl(204, 7%, 85%);
+  padding: .75em;
+  border-radius: .25em;
+  opacity: 1;
+  transition: 500ms ease-in-out;
+  margin-bottom: .5em;
+}
+
+.alert:last-child {
+  margin-bottom: 0;
+}
+.alert.hide {
+  opacity: 0;
+}

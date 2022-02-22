@@ -1,12 +1,15 @@
 import React, {useRef, useEffect} from 'react'
 import GuessGrid from './components/GuessGrid';
 import Keyboard from './components/Keyboard';
+import Alert from './components/Alert';
 import './App.css';
 
 import {dictionary} from './data/dictionary'
-import {targetWords} from './data/targetWords'
 const WORD_LENGTH = 5
 
+const randomNum = Math.floor(Math.floor(Math.random(dictionary.length) * dictionary.length))
+const targetWord = dictionary[randomNum]
+console.log(targetWord)
 
 function App() {
   const gridRef = useRef(null)
@@ -69,7 +72,28 @@ function handleKeyPress(e) {
 }
 
 function submitGuess() {
+  const activeTiles = [...getActiveTiles()]
+  if (activeTiles.length !== WORD_LENGTH) {
+    showAlert("Not enough letters")
+    // shakeTiles(activeTiles)
+    return
+  }
+}
 
+function showAlert(message, duration = 1000) {
+  const alertContainer = document.querySelector("[data-alert-container]")
+  const alert = document.createElement("div")
+  alert.textContent = message
+  alert.classList.add("alert")
+  alertContainer.prepend(alert)
+  if (duration == null) return
+
+  setTimeout(() => {
+    alert.classList.add("hide")
+    alert.addEventListener("transitionend", () => {
+      alert.remove()
+    })
+  }, duration)
 }
 
 function deleteKey() {
@@ -87,6 +111,7 @@ function getActiveTiles() {
 
   return (
     <div className="App">
+      <Alert/>
       <GuessGrid rows={6} columns={5} gridRef={gridRef} />
       <Keyboard/>
     </div>
