@@ -1,12 +1,12 @@
 import React from 'react'
 
-export default function Keyboard() {
+export default function Keyboard({keyRef}) {
 
   return (
-    <div className="keyboard">
-    <button className="key wrong" data-key="Q">Q</button>
-    <button className="key wrong-location" data-key="W">W</button>
-    <button className="key correct" data-key="E">E</button>
+    <div ref={keyRef} className="keyboard">
+    <button className="key" data-key="Q">Q</button>
+    <button className="key" data-key="W">W</button>
+    <button className="key" data-key="E">E</button>
     <button className="key" data-key="R">R</button>
     <button className="key" data-key="T">T</button>
     <button className="key" data-key="Y">Y</button>

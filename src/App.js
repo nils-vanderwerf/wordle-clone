@@ -6,6 +6,7 @@ import './App.css';
 
 import {dictionary} from './data/dictionary'
 const WORD_LENGTH = 5
+const FLIP_ANIMATION_DURATION = 500
 
 const randomNum = Math.floor(Math.floor(Math.random(dictionary.length) * dictionary.length))
 const targetWord = dictionary[randomNum]
@@ -13,6 +14,7 @@ console.log(targetWord)
 
 function App() {
   const gridRef = useRef(null)
+  const keyboard = useRef(null)
 
   useEffect(() => {
     document.addEventListener("click", handleMouseClick)
@@ -78,7 +80,33 @@ function submitGuess() {
     shakeTiles(activeTiles)
     return
   }
+
+  const guess = activeTiles.reduce((word, tile) => {
+    return word + tile.dataset.letter
+  }, "")
+  checkRealWord(guess, activeTiles)
 }
+
+function checkRealWord(guess, tiles) {
+  if (!dictionary.includes(guess)) {
+    showAlert("Not in word list")
+    shakeTiles(tiles)
+    return
+  }
+
+  stopInteraction()
+  tiles.forEach((...params) => flipTile(...params, guess))
+}
+
+function flipTile(tile, index, array, guess) {
+  const letter = tile.dataset.letter
+  console.log("KEYBOARD", keyboard)
+  const key = keyboard.current.querySelector(`[data-key=${letter}]`)
+  setTimeout(() => {
+    tile.classList.add("flip")
+  }, index * FLIP_ANIMATION_DURATION / 2)
+}
+
 
 function showAlert(message, duration = 1000) {
   const alertContainer = document.querySelector("[data-alert-container]")
@@ -122,7 +150,7 @@ function getActiveTiles() {
     <div className="App">
       <Alert/>
       <GuessGrid rows={6} columns={5} gridRef={gridRef} />
-      <Keyboard/>
+      <Keyboard keyRef={keyboard}/>
     </div>
   );
 }
