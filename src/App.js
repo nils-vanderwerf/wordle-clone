@@ -75,7 +75,7 @@ function submitGuess() {
   const activeTiles = [...getActiveTiles()]
   if (activeTiles.length !== WORD_LENGTH) {
     showAlert("Not enough letters")
-    // shakeTiles(activeTiles)
+    shakeTiles(activeTiles)
     return
   }
 }
@@ -103,6 +103,15 @@ function deleteKey() {
   lastTile.textContent = ""
   delete lastTile.dataset.state
   delete lastTile.dataset.letter
+}
+
+function shakeTiles(tiles) {
+  tiles.forEach(tile => {
+    tile.classList.add("shake")
+    tile.addEventListener("animationend", () => {
+      tile.classList.remove("shake")
+    }, {once: true})
+  })
 }
 
 function getActiveTiles() {
